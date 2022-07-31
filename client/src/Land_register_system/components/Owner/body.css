@@ -1,0 +1,19 @@
+.form-floating{
+    margin: 5px;
+    width: 300px;
+}
+label{
+    color: gray;
+}
+
+.form-floating input{
+    font-size: 20px;
+    
+}
+.form-floating label{
+    font-size:17px;
+    padding: 0 10px;
+}
+form button{
+    font-size: x-large;
+}
