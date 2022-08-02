@@ -24,11 +24,11 @@ export const SearchForm = () => {
                         <tr className='fw-bold'>
                             <td>State</td>
                             <td>District</td>
-                            <td>Location</td>
                             <td>PlotNo</td>
                             <td>Availability</td>
                             <td>Requester</td>
                             <td>RequestStatus</td>
+                            <td>Selling price</td>
                         </tr>
                     </thead>
                     <tbody>
