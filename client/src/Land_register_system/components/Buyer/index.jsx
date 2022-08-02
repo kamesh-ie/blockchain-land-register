@@ -7,7 +7,12 @@ import LandContext from '../../Land_contexts/LandContext'
 export const Buyer = () => {
   const { state:{ contract,accounts },db } = useContext(LandContext)
   const [land_number,setLand_number] = useState()
+  const [purchaseLand_number,setPurchaseLand_number] = useState()
 
+  const purchase_land = async e => {
+    e.preventDefault();
+    let result = await contract.methods.purchaseland(purchaseLand_number).send({ from:accounts[0],value:1000000000000000000 })
+  }
 
 
   const give_request = async e => {
@@ -32,6 +37,12 @@ export const Buyer = () => {
             <Form.Control value={land_number} onChange={e => setLand_number(e.target.value)} placeholder='land number' />
           </Form.FloatingLabel>
           <Button type='submit'>Give Request</Button>
+        </Form>
+        <Form onSubmit={purchase_land}>
+          <Form.FloatingLabel label='land number'>
+            <Form.Control value={purchaseLand_number} onChange={e => setPurchaseLand_number(e.target.value)} placeholder='land number' />
+          </Form.FloatingLabel>
+          <Button type='submit'>Purchase</Button>
         </Form>
     </div>
   )
