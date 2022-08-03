@@ -11,9 +11,9 @@ export const Delete_docs = () => {
 
 
     const delete_docs_func = async () => {
-        const docs = await getDocs(collection(db,'registered_lands'))
+        const docs = await getDocs(collection(db,'pending_lands'))
         docs.forEach(async _doc => {
-            await deleteDoc(doc(db,'registered_lands',_doc.id))
+            await deleteDoc(doc(db,'pending_lands',_doc.id))
         })
         setDelete_confirm(true)
     }

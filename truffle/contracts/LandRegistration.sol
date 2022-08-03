@@ -14,14 +14,16 @@ contract LandRegistration{
     address requester;
     reqStatus requestStatus;
 }
-enum reqStatus {Default,pending,reject,approved}
+enum reqStatus {Default,pending,reject,approved,sold}
 //profile of a client 
 struct profiles{
     uint[]assetlist;
 }
 mapping (uint => landDetails) Land;
 address owner;
-mapping(string => address)manager; 
+mapping(address => bool)public manager_exist; 
+mapping(uint => address)public managers;
+uint public no_of_managers;
 mapping (address => profiles) profile;
 
 //contract o..ner 
@@ -40,12 +42,18 @@ modifier onlyOwner {
 //  ladcirg locat!O" .,.ager
 
 // #owner
-function addManager ( address _Manager,string memory _location ) onlyOwner public {
-     manager[_location]=_Manager;  }
+function addManager ( address _Manager ) public {
+    require(msg.sender == owner || role(msg.sender) == 1,"you are not allowed");
+     manager_exist[_Manager]=true;
+     managers[no_of_managers] = _Manager;
+     no_of_managers++;
+       }
 
 // Deahtrato  o� land deta: s
 
 event register_return (uint Land_unique_number,bool _result);
+
+
 function register (string memory _state,string memory _district ,
  string memory  _location,string memory _landmark,uint256 _plotNo
   ) public {
@@ -58,7 +66,7 @@ function register (string memory _state,string memory _district ,
   Land[Number].landMark = _landmark;
    Land[Number].plotNo = _plotNo;
    Land[Number].CurrentOwner = payable(msg.sender); 
-   profile[msg.sender].assetlist.push(Number); 
+   profile[msg.sender].assetlist.push(Number);
    emit register_return(Number,true); 
 }
 
@@ -66,7 +74,7 @@ function register (string memory _state,string memory _district ,
 //availing land for sale.
 // #manager
 function makeAvailable(uint property,uint _priceselling)public {
-	// require(Land[property].CurrentOwner == msg.sender);
+	require(role(msg.sender) == 1 || role(msg.sender) == 0);
 	Land[property].isAvailable=true;
     Land[property].priceSelling = _priceselling;
 }
@@ -85,7 +93,7 @@ function makeAvailable(uint property,uint _priceselling)public {
 
 //processing request for the land by accepting or rejecting 
 function processRequest(uint property ,reqStatus status)public {
-   require(Land [property].CurrentOwner == msg.sender); 
+   require(role(msg.sender) == 1 || role(msg.sender) == 0);
    Land [property].requestStatus=status;
    if(status == reqStatus.reject){
    Land[property].requester = address(0);
@@ -101,6 +109,12 @@ function Owner(uint Number) public view returns(
 {
     return(Land[Number].state,Land[Number].district,Land[Number].plotNo,
     Land[Number].isAvailable,Land[Number].requester,Land[Number].requestStatus,Land[Number].priceSelling);
+}
+
+function role(address _userAddress) public view returns(uint8){
+    if( _userAddress == owner){return 0;}
+    else if(manager_exist[_userAddress]){return 1;}
+    else{return 2;}
 }
 
 
@@ -139,13 +153,14 @@ function viewRequest(uint property)public view returns(address){
 function purchaseland (uint property)public payable{
     require(Land[property].requestStatus == reqStatus.approved);
     require(msg.value >= Land[property].priceSelling); 
+    require(msg.sender == Land[property].requester);
 	Land [property].CurrentOwner.transfer(Land[property].priceSelling);
 	removeOwnership(Land[property].CurrentOwner,property);                   
 	Land [property].CurrentOwner=payable(msg.sender);
     Land [property].isAvailable=false;        
 	Land [property].requester = address(0);     
-	Land [property].requestStatus = reqStatus.Default; 
 	profile[msg.sender].assetlist.push(property); 
+    Land[property].requestStatus = reqStatus.sold;
 }
 
 //reoving the o�nership of seller for the land.and it is called by the purchaseland function 
