@@ -12,7 +12,7 @@ export default function Add_manager_form() {
   const add_Manager = async (e) => {
     e.preventDefault();
     console.log(accounts)
-    const result = await contract.methods.addManager(manager_address,location).send({ from:accounts[0] })
+    const result = await contract.methods.addManager(manager_address).send({ from:accounts[0] })
     console.log(result)
 
   }
@@ -27,9 +27,6 @@ export default function Add_manager_form() {
           <h1>add manager</h1>
           <FloatingLabel controlId="floatingInput" label="manager_address">
             <Form.Control type="input" placeholder="manager_address" value={manager_address} onChange={e => setManager_address(e.target.value)} required/>
-          </FloatingLabel>
-          <FloatingLabel controlId="floatingInput" label="location">
-            <Form.Control type="input" placeholder="location" value={location} onChange={e => setLocation(e.target.value)} required/>
           </FloatingLabel>
           <Button type='submit' size='lg' variant='dark'>Add</Button>
         </Form>

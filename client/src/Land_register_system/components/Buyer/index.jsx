@@ -12,6 +12,9 @@ export const Buyer = () => {
   const purchase_land = async e => {
     e.preventDefault();
     let result = await contract.methods.purchaseland(purchaseLand_number).send({ from:accounts[0],value:1000000000000000000 })
+    const _docref = await getDoc(doc(db,'pending_lands',purchaseLand_number))
+    await setDoc(doc(db,'purchased_lands',purchaseLand_number),_docref.data())
+    await deleteDoc(doc(db,'pending_lands',_docref.id))
   }
 
 
@@ -31,18 +34,18 @@ export const Buyer = () => {
 
 
   return (
-    <div>
-        <Form onSubmit={give_request}>
+    <div className='ms-4'>
+        <Form  onSubmit={give_request}>
           <Form.FloatingLabel label='land number'>
             <Form.Control value={land_number} onChange={e => setLand_number(e.target.value)} placeholder='land number' />
           </Form.FloatingLabel>
-          <Button type='submit'>Give Request</Button>
+          <Button className='my-3' type='submit'>Give Request</Button>
         </Form>
         <Form onSubmit={purchase_land}>
           <Form.FloatingLabel label='land number'>
             <Form.Control value={purchaseLand_number} onChange={e => setPurchaseLand_number(e.target.value)} placeholder='land number' />
           </Form.FloatingLabel>
-          <Button type='submit'>Purchase</Button>
+          <Button className='my-3' variant='success' type='submit'>Purchase</Button>
         </Form>
     </div>
   )

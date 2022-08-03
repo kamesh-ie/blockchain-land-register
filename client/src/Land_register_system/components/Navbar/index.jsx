@@ -16,6 +16,7 @@ export const Land_Navbar = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link><Link to={'/land'} >Home</Link></Nav.Link>
+            <Nav.Link><Link to={'/land/owner'} >Owner</Link></Nav.Link>
             <Nav.Link><Link to={'/land/manager'} >Manager</Link></Nav.Link>
             <Nav.Link><Link to={'/land/buy'} >Buyer</Link></Nav.Link>
           </Nav>

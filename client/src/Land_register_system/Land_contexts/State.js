@@ -1,6 +1,12 @@
 const actions = {
     init: "INIT",
   };
+
+  const user_roles = {
+    owner:0,
+    manager:1,
+    user:2,
+  }
   
   const initialState = {
     artifact: null,
@@ -23,6 +29,7 @@ const actions = {
   export {
     actions,
     initialState,
+    user_roles,
     reducer
 };
   
