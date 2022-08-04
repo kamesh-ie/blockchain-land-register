@@ -11,7 +11,8 @@ export const Buyer = () => {
 
   const purchase_land = async e => {
     e.preventDefault();
-    let result = await contract.methods.purchaseland(purchaseLand_number).send({ from:accounts[0],value:1000000000000000000 })
+    let price = await contract.methods.Owner1(purchaseLand_number).call({ from:accounts[0] })
+    let result = await contract.methods.purchaseland(purchaseLand_number).send({ from:accounts[0],value:parseInt(price[6]) })
     const _docref = await getDoc(doc(db,'pending_lands',purchaseLand_number))
     await setDoc(doc(db,'purchased_lands',purchaseLand_number),_docref.data())
     await deleteDoc(doc(db,'pending_lands',_docref.id))

@@ -19,7 +19,7 @@ enum reqStatus {Default,pending,reject,approved,sold}
 struct profiles{
     uint[]assetlist;
 }
-mapping (uint => landDetails) Land;
+mapping (uint => landDetails) public Land;
 address owner;
 mapping(address => bool)public manager_exist; 
 mapping(uint => address)public managers;
@@ -104,11 +104,16 @@ function processRequest(uint property ,reqStatus status)public {
 }
 
 // to view details of land for tne o�ner #owner
-function Owner(uint Number) public view returns(
-  string memory,string memory,uint256,bool,address,reqStatus,uint)
+function Owner1(uint Number) public view returns(
+  string memory,string memory,string memory,string memory,uint256,address,uint)
 {
-    return(Land[Number].state,Land[Number].district,Land[Number].plotNo,
-    Land[Number].isAvailable,Land[Number].requester,Land[Number].requestStatus,Land[Number].priceSelling);
+    return(Land[Number].state,Land[Number].district,Land[Number].location,
+    Land[Number].landMark,Land[Number].plotNo,Land[Number].CurrentOwner,Land[Number].priceSelling);
+}
+function Owner2(uint Number) public view returns(
+  bool,address,reqStatus)
+{
+    return(Land[Number].isAvailable,Land[Number].requester,Land[Number].requestStatus);
 }
 
 function role(address _userAddress) public view returns(uint8){

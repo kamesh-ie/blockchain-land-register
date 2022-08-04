@@ -9,7 +9,8 @@ export const Body = () => {
     const { state: { accounts, contract } } = useContext(LandContext)
     const [number, setNumber] = useState('')
     const [land_price,setLand_price] = useState('')
-    const [result,setResult] = useState('')
+    const [result1,setResult1] = useState('')
+    const [result2,setResult2] = useState('')
 
 
     const setPrice = async e => {
@@ -20,16 +21,16 @@ export const Body = () => {
     const req_details = async e => {
         
         e.preventDefault()
-        const _result = await contract.methods.Owner(number).call({ from: accounts[0] })
-        setResult(_result)
-
-
+        const _result1 = await contract.methods.Owner1(number).call({ from: accounts[0] })
+        const _result2 = await contract.methods.Owner2(number).call({ from: accounts[0] })
+        setResult1(_result1)
+        setResult2(_result2)
     }
 
     const setStatus = async e => {
         e.preventDefault()
         const _result = await contract.methods.processRequest(number,land_price).send({ from: accounts[0] })
-        setResult(_result)
+        // setResult(_result)
     }
 
     return (
@@ -42,41 +43,47 @@ export const Body = () => {
                     <Button type='submit'>Search</Button>
                 </Container>
             </Form>
-            <Container style={{fontSize:'20px'}}>
-                {result ? <div>
+            <Container style={{fontSize:'20px',width:'100vw',overflow:'auto'}}>
+                {result2 ? <div>
                 <Table bordered hover>
                     <thead>
                         <tr className='fw-bold'>
                             <td>State</td>
                             <td>District</td>
-                            <td>PlotNo</td>
-                            <td>Availability</td>
-                            <td>Requester</td>
-                            <td>RequestStatus</td>
-                            <td>Price</td>
+                            <td>location</td>
+                            <td>landMark</td>
+                            <td>plotNo</td>
+                            <td>CurrentOwner</td>
+                            <td>priceSelling</td>
+                            <td>isAvailable</td>
+                            <td>requester</td>
+                            <td>requestStatus</td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{String(result[0])}</td>
-                            <td>{String(result[1])}</td>
-                            <td>{String(result[2])}</td>
-                            <td>{String(result[3])}</td>
-                            <td>{String(result[4])}</td>
-                            <td>{parseInt(result[5])==1 ? <Form className='d-flex' onSubmit={setStatus}>
-                              <Form.FloatingLabel className='m-0' label='Number'>
-                              <Form.Control name='land_price_number' value={land_price} onChange={e => {setLand_price(e.target.value);console.log(land_price)}}  type='input' placeholder='number' />
-                              </Form.FloatingLabel>
-                              <Button type='submit'>Set</Button>
-                            </Form> :parseInt(result[5])} </td>
+                            <td>{String(result1[0])}</td>
+                            <td>{String(result1[1])}</td>
+                            <td>{String(result1[2])}</td>
+                            <td>{String(result1[3])}</td>
+                            <td>{String(result1[4])}</td>
+                            <td>{String(result1[5])}</td>
                             <td>
-                            {parseInt(result[6]) ? result[6] : <Form className='d-flex' onSubmit={setPrice}>
+                            {parseInt(result1[6]) ? result1[6] : <Form className='d-flex' onSubmit={setPrice}>
                               <Form.FloatingLabel className='m-0' label='Number'>
                               <Form.Control name='land_price_number' value={land_price} onChange={e => {setLand_price(e.target.value);console.log(land_price)}}  type='input' placeholder='number' />
                               </Form.FloatingLabel>
                               <Button type='submit'>Set</Button>
                             </Form>}
                             </td>
+                            <td>{String(result2[0])}</td>
+                            <td>{String(result2[1])}</td>
+                            <td>{parseInt(result2[2])==1 ? <Form className='d-flex' onSubmit={setStatus}>
+                              <Form.FloatingLabel className='m-0' label='Number'>
+                              <Form.Control name='land_price_number' value={land_price} onChange={e => {setLand_price(e.target.value);console.log(land_price)}}  type='input' placeholder='number' />
+                              </Form.FloatingLabel>
+                              <Button type='submit'>Set</Button>
+                            </Form> :parseInt(result2[2])} </td>
                         </tr>
                     </tbody>
                 </Table>

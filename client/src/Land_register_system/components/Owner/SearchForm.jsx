@@ -14,31 +14,45 @@ export const SearchForm = () => {
     const req_details = async e => {
         e.preventDefault()
         console.log(123)
-        const result = await contract.methods.Owner(number).call({ from: accounts[0] })
-        console.log(result[4])
+        const result1 = await contract.methods.Owner1(number).call({ from: accounts[0] })
+        const result2 = await contract.methods.Owner2(number).call({ from: accounts[0] })
 
         var t = (
             <div>
+                <Container style={{fontSize:'20px',width:'100vw',overflow:'auto'}}>
+                {result2 ? <div>
                 <Table bordered hover>
                     <thead>
                         <tr className='fw-bold'>
                             <td>State</td>
                             <td>District</td>
-                            <td>PlotNo</td>
-                            <td>Availability</td>
-                            <td>Requester</td>
-                            <td>RequestStatus</td>
-                            <td>Selling price</td>
+                            <td>location</td>
+                            <td>landMark</td>
+                            <td>plotNo</td>
+                            <td>CurrentOwner</td>
+                            <td>priceSelling</td>
+                            <td>isAvailable</td>
+                            <td>requester</td>
+                            <td>requestStatus</td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            {Object.values(result).map((val, id) => (
-                                <td key={id}>{String(val)}</td>
-                            ))}
+                            <td>{String(result1[0])}</td>
+                            <td>{String(result1[1])}</td>
+                            <td>{String(result1[2])}</td>
+                            <td>{String(result1[3])}</td>
+                            <td>{String(result1[4])}</td>
+                            <td>{String(result1[5])}</td>
+                            <td>{result1[6]}</td>
+                            <td>{String(result2[0])}</td>
+                            <td>{String(result2[1])}</td>
+                            <td>{result2[2]}</td>
                         </tr>
                     </tbody>
                 </Table>
+            </div>: null}
+            </Container>
             </div>
         )
         setTable(t)
