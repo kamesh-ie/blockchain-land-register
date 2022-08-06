@@ -12,9 +12,19 @@ contract LandRegistration{
     uint priceSelling;
     bool isAvailable; 
     address requester;
+    Latitude latitude;
+    Longitude longitude;
     reqStatus requestStatus;
 }
-enum reqStatus {Default,pending,reject,approved,sold}
+struct Latitude{
+    int16 numeric;
+    string decimal;
+}
+struct Longitude{
+    int16 numeric;
+    string decimal;
+}
+enum reqStatus {registered,Default,pending,reject,approved,sold}
 //profile of a client 
 struct profiles{
     uint[]assetlist;
@@ -25,6 +35,10 @@ mapping(address => bool)public manager_exist;
 mapping(uint => address)public managers;
 uint public no_of_managers;
 mapping (address => profiles) profile;
+uint[] public registered_lands;
+uint[] public pending_lands;
+uint[] public sold_lands;
+
 
 //contract o..ner 
 constructor () {
@@ -55,7 +69,8 @@ event register_return (uint Land_unique_number,bool _result);
 
 
 function register (string memory _state,string memory _district ,
- string memory  _location,string memory _landmark,uint256 _plotNo
+ string memory  _location,string memory _landmark,uint256 _plotNo,
+ int16 lat_num,int16 long_num,string memory lat_dec,string memory long_dec
   ) public {
 //   require(manager[_location] == msg.sender || owner == msg.sender); 
 
@@ -66,17 +81,24 @@ function register (string memory _state,string memory _district ,
   Land[Number].landMark = _landmark;
    Land[Number].plotNo = _plotNo;
    Land[Number].CurrentOwner = payable(msg.sender); 
+   Land[Number].latitude.numeric = lat_num;
+   Land[Number].latitude.decimal = lat_dec;
+   Land[Number].longitude.numeric = long_num;
+   Land[Number].longitude.decimal = long_dec;
    profile[msg.sender].assetlist.push(Number);
+   registered_lands.push(Number);
    emit register_return(Number,true); 
 }
 
 
 //availing land for sale.
 // #manager
-function makeAvailable(uint property,uint _priceselling)public {
+function makeAvailable(uint property,uint _priceselling,uint index)public {
 	require(role(msg.sender) == 1 || role(msg.sender) == 0);
 	Land[property].isAvailable=true;
     Land[property].priceSelling = _priceselling;
+    Land[property].requestStatus = reqStatus.Default;
+    registered_lands_pop(index);
 }
 
 
@@ -88,19 +110,20 @@ function makeAvailable(uint property,uint _priceselling)public {
     Land [Number].requester=msg.sender ; 
     Land [Number].isAvailable=false;
     Land [Number].requestStatus = reqStatus.pending; //changes the status to pending.
+    pending_lands.push(Number);
 }
 
 
 //processing request for the land by accepting or rejecting 
-function processRequest(uint property ,reqStatus status)public {
+function processRequest(uint property ,reqStatus status,uint index)public {
    require(role(msg.sender) == 1 || role(msg.sender) == 0);
    Land [property].requestStatus=status;
    if(status == reqStatus.reject){
    Land[property].requester = address(0);
    Land[property].requestStatus = reqStatus.Default;
 	Land[property].isAvailable=true;
-
    }
+   pending_lands_pop(index);
 }
 
 // to view details of land for tne o�ner #owner
@@ -111,9 +134,9 @@ function Owner1(uint Number) public view returns(
     Land[Number].landMark,Land[Number].plotNo,Land[Number].CurrentOwner,Land[Number].priceSelling);
 }
 function Owner2(uint Number) public view returns(
-  bool,address,reqStatus)
+  bool,address,reqStatus,Latitude memory,Longitude memory)
 {
-    return(Land[Number].isAvailable,Land[Number].requester,Land[Number].requestStatus);
+    return(Land[Number].isAvailable,Land[Number].requester,Land[Number].requestStatus,Land[Number].latitude,Land[Number].longitude);
 }
 
 function role(address _userAddress) public view returns(uint8){
@@ -128,11 +151,7 @@ function role(address _userAddress) public view returns(uint8){
 
 // 'to view d"ails o� land for te o..> er
 // #buyer
-function Buyer(uint Number) public view returns(address,uint,bool,address,reqStatus)
-{
-    return(Land[Number].CurrentOwner,Land[Number].priceSelling, Land[Number].isAvailable,
-    Land[Number].requester,Land [Number].requestStatus );
-}
+
 
 
 // I to CCII .te unique llJ cer fo  a l;inc.
@@ -166,15 +185,18 @@ function purchaseland (uint property)public payable{
 	Land [property].requester = address(0);     
 	profile[msg.sender].assetlist.push(property); 
     Land[property].requestStatus = reqStatus.sold;
+    sold_lands.push(property);
 }
 
 //reoving the o�nership of seller for the land.and it is called by the purchaseland function 
 function removeOwnership(address previousOwner,uint id)private{
     uint index = findld(id,previousOwner);
-	profile[previousOwner].assetlist[index]=profile[previousOwner].assetlist[profile[previousOwner]
-    .assetlist.length-1];
-    delete profile[previousOwner].assetlist[profile[previousOwner].assetlist.length -1]; 
-	profile[previousOwner].assetlist.pop(); }
+    require(index < profile[previousOwner].assetlist.length,"Array Out of index");
+    for(uint i = index; i < profile[previousOwner].assetlist.length-1; i++){
+      profile[previousOwner].assetlist[i] = profile[previousOwner].assetlist[i+1];      
+    }
+    profile[previousOwner].assetlist.pop();
+}
 
 
     //for finding the index of a perticular Number
@@ -183,6 +205,29 @@ function findld(uint id,address user)public view returns(uint){
     for(i=0;i<profile[user].assetlist.length;i++){
     	if(profile[user].assetlist[i]== id)
     return i; }
- return i;
+ return profile[user].assetlist.length;
 }
+
+function registered_lands_pop(uint index) private {
+    require(index < registered_lands.length,"Array Out of index");
+    for(uint i = index; i < registered_lands.length-1; i++){
+      registered_lands[i] = registered_lands[i+1];      
+    }
+    registered_lands.pop();
+}
+
+function pending_lands_pop(uint index) private {
+    require(index < pending_lands.length,"Array Out of index");
+    for(uint i = index; i < pending_lands.length-1; i++){
+      pending_lands[i] = pending_lands[i+1];      
+    }
+    pending_lands.pop();
+}
+function registered_pending_length(uint8 arr) public view returns(uint){
+    if(arr == 0){return registered_lands.length;}
+    else if(arr == 1){return pending_lands.length;}
+    else if(arr == 2){return sold_lands.length;}
+    return 0;
+}
+
 }

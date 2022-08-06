@@ -4,8 +4,12 @@ import './body.css'
 import Register_land_form from './Register_land_form';
 import Add_manager_form from './Add_manager_form';
 import { SearchForm } from './SearchForm';
+import { useEffect } from 'react';
+import { useContext } from 'react';
+import LandContext from '../../Land_contexts/LandContext';
 
 export default function Body() {
+  const { state:{ contract,accounts } } = useContext(LandContext)
 
   return (
     <div>

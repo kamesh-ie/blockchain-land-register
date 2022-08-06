@@ -13,9 +13,9 @@ export const SearchForm = () => {
 
     const req_details = async e => {
         e.preventDefault()
-        console.log(123)
         const result1 = await contract.methods.Owner1(number).call({ from: accounts[0] })
         const result2 = await contract.methods.Owner2(number).call({ from: accounts[0] })
+
 
         var t = (
             <div>
@@ -34,6 +34,8 @@ export const SearchForm = () => {
                             <td>isAvailable</td>
                             <td>requester</td>
                             <td>requestStatus</td>
+                            <td>latitude</td>
+                            <td>longitude</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,6 +50,9 @@ export const SearchForm = () => {
                             <td>{String(result2[0])}</td>
                             <td>{String(result2[1])}</td>
                             <td>{result2[2]}</td>
+                            {console.log(result1,result2)}
+                            <td>{result2[3].numeric+'.'+result2[3].decimal}</td>
+                            <td>{result2[4].numeric+'.'+result2[4].decimal}</td>
                         </tr>
                     </tbody>
                 </Table>

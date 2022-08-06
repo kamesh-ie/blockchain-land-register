@@ -12,7 +12,6 @@ export const LandPagesRole = ({ children, role }) => {
 
     const checkRoles = async () => {
         if (state.contract != null) {
-            console.log(role)
             const result = await state.contract.methods.role(state.accounts[0]).call({ from: state.accounts[0] })
             if (result == user_roles.user) {
                 if (role == user_roles.user) {

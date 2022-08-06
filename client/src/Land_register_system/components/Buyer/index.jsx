@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useContext } from 'react'
 import { Button, Form } from 'react-bootstrap'
 import LandContext from '../../Land_contexts/LandContext'
+import { Maps } from '../maps'
 
 export const Buyer = () => {
   const { state:{ contract,accounts },db } = useContext(LandContext)
@@ -48,6 +49,10 @@ export const Buyer = () => {
           </Form.FloatingLabel>
           <Button className='my-3' variant='success' type='submit'>Purchase</Button>
         </Form>
+
+        <div className="maps">
+          <Maps />
+        </div>
     </div>
   )
 }

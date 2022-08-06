@@ -11,15 +11,17 @@ export const Body = () => {
     const [land_price,setLand_price] = useState('')
     const [result1,setResult1] = useState('')
     const [result2,setResult2] = useState('')
+    const [lands_pending, setLands_pending] = useState([])
+    const [lands_registered, setLands_registered] = useState([])
 
 
     const setPrice = async e => {
         e.preventDefault();
-        const _result = await contract.methods.makeAvailable(number,land_price).send({ from: accounts[0] })
+        const _index = lands_registered.indexOf(number)
+        const _result = await contract.methods.makeAvailable(number,land_price,_index).send({ from: accounts[0] })
     }
 
     const req_details = async e => {
-        
         e.preventDefault()
         const _result1 = await contract.methods.Owner1(number).call({ from: accounts[0] })
         const _result2 = await contract.methods.Owner2(number).call({ from: accounts[0] })
@@ -29,7 +31,8 @@ export const Body = () => {
 
     const setStatus = async e => {
         e.preventDefault()
-        const _result = await contract.methods.processRequest(number,land_price).send({ from: accounts[0] })
+        const _index = lands_pending.indexOf(number)
+        const _result = await contract.methods.processRequest(number,land_price,_index).send({ from: accounts[0] })
         // setResult(_result)
     }
 
@@ -78,7 +81,7 @@ export const Body = () => {
                             </td>
                             <td>{String(result2[0])}</td>
                             <td>{String(result2[1])}</td>
-                            <td>{parseInt(result2[2])==1 ? <Form className='d-flex' onSubmit={setStatus}>
+                            <td>{parseInt(result2[2])==2 ? <Form className='d-flex' onSubmit={setStatus}>
                               <Form.FloatingLabel className='m-0' label='Number'>
                               <Form.Control name='land_price_number' value={land_price} onChange={e => {setLand_price(e.target.value);console.log(land_price)}}  type='input' placeholder='number' />
                               </Form.FloatingLabel>
@@ -89,7 +92,7 @@ export const Body = () => {
                 </Table>
             </div>: null}
             </Container>
-            <Pending_lands />
+            <Pending_lands lands_pending={lands_pending} setLands_pending={setLands_pending} lands_registered={lands_registered} setLands_registered={setLands_registered}  />
         </>
     )
 }

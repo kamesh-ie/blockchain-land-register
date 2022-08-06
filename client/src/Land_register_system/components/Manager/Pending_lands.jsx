@@ -6,27 +6,33 @@ import { useContext } from 'react'
 import { Button, Col, Container, Form, Row, Table } from 'react-bootstrap'
 import LandContext from '../../Land_contexts/LandContext'
 
-export const Pending_lands = () => {
+export const Pending_lands = ({ lands_pending,setLands_pending,lands_registered,setLands_registered }) => {
     const { state: { contract, accounts }, db } = useContext(LandContext)
-    const [lands_pending, setLands_pending] = useState([])
-    const [lands_registered, setLands_registered] = useState([])
 
     const setPendingLands = async () => {
-        const _docSnap = await getDocs(collection(db, 'pending_lands'))
-        _docSnap.forEach(doc_each => {
-            setLands_pending(oldArray => [...oldArray, doc_each.id])
-        })
+        let _refArray = []
+        const _pending_array_length = await contract.methods.registered_pending_length(1).call({ from:accounts[0] })
+        console.log(_pending_array_length)
+        for(var i =0;i<_pending_array_length;i++){
+            let land_number = await contract.methods.pending_lands(i).call({ from:accounts[0] })
+            _refArray.push(land_number)
+        }
+        setLands_pending(_refArray)
 
     }
     const setRegisteredLands = async () => {
-        const _docSnap = await getDocs(collection(db, 'registered_lands'))
-        _docSnap.forEach(doc_each => {
-            setLands_registered(oldArray => [...oldArray, doc_each.id])
-        })
+        let _refArray = []
+        const _registered_array_length = await contract.methods.registered_pending_length(0).call({ from:accounts[0] })
+        for(var i =0;i<_registered_array_length;i++){
+            let land_number = await contract.methods.registered_lands(i).call({ from:accounts[0] })
+            _refArray.push(land_number)
+        }
+        setLands_registered(_refArray)
 
     }
 
     useEffect(() => {
+
        setPendingLands()
         setRegisteredLands()
     },[])
