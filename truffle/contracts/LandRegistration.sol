@@ -93,29 +93,29 @@ function register (string memory _state,string memory _district ,
 
 //availing land for sale.
 // #manager
-function makeAvailable(uint property,uint _priceselling,uint index)public {
+function makeAvailable(uint property,uint _priceselling)public {
 	require(role(msg.sender) == 1 || role(msg.sender) == 0);
 	Land[property].isAvailable=true;
     Land[property].priceSelling = _priceselling;
     Land[property].requestStatus = reqStatus.Default;
-    registered_lands_pop(index);
 }
 
 
 
 //push a request to the land owner
 // #buyer
- function requstTolandOwner(uint Number) public { 
+ function requstTolandOwner(uint Number,uint index) public { 
     require(Land[Number].isAvailable);
     Land [Number].requester=msg.sender ; 
     Land [Number].isAvailable=false;
     Land [Number].requestStatus = reqStatus.pending; //changes the status to pending.
+    registered_lands_pop(index);
     pending_lands.push(Number);
 }
 
 
 //processing request for the land by accepting or rejecting 
-function processRequest(uint property ,reqStatus status,uint index)public {
+function processRequest(uint property ,reqStatus status)public {
    require(role(msg.sender) == 1 || role(msg.sender) == 0);
    Land [property].requestStatus=status;
    if(status == reqStatus.reject){
@@ -123,7 +123,6 @@ function processRequest(uint property ,reqStatus status,uint index)public {
    Land[property].requestStatus = reqStatus.Default;
 	Land[property].isAvailable=true;
    }
-   pending_lands_pop(index);
 }
 
 // to view details of land for tne o�ner #owner
@@ -174,7 +173,7 @@ function viewRequest(uint property)public view returns(address){
     return(Land [property].requester);
 }
 //buying the approved property
-function purchaseland (uint property)public payable{
+function purchaseland (uint property,uint index)public payable{
     require(Land[property].requestStatus == reqStatus.approved);
     require(msg.value >= Land[property].priceSelling); 
     require(msg.sender == Land[property].requester);
@@ -185,6 +184,7 @@ function purchaseland (uint property)public payable{
 	Land [property].requester = address(0);     
 	profile[msg.sender].assetlist.push(property); 
     Land[property].requestStatus = reqStatus.sold;
+    pending_lands_pop(index);
     sold_lands.push(property);
 }
 

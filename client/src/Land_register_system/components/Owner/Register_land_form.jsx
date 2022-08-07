@@ -3,10 +3,9 @@ import { useContext } from 'react';
 import { useState } from 'react';
 import { Button, Col, Container, FloatingLabel, Form, Row } from 'react-bootstrap';
 import LandContext from '../../Land_contexts/LandContext';
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 
 export default function Register_land_form() {
-  const { state: { contract, accounts }, db } = useContext(LandContext);
+  const { state: { contract, accounts } } = useContext(LandContext);
   const [loc_state, setLoc_state] = useState('')
   const [district, setDistrict] = useState('')
   const [location, setLocation] = useState('')
@@ -26,10 +25,6 @@ export default function Register_land_form() {
     const result = await contract.methods.register(loc_state, district, location, landmark, plotNo,parseInt(latitude_number[0]),parseInt(longitude_number[0]),latitude_number[1],longitude_number[1]).send({ from: accounts[0] });
     console.log(result)
     const land_unique_number = result.events.register_return.returnValues.Land_unique_number
-
-    await setDoc(doc(db,'registered_lands',land_unique_number),{
-      added_time:serverTimestamp(),
-    })
 
 
 
