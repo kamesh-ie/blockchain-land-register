@@ -55,6 +55,8 @@ export const Maps = () => {
           border: `1px solid #ccc`,
           padding: 15
         }
+
+
         let infobox_obj = <InfoWindow
         onCloseClick={() => setInfobox([])}
         position={coor_position}
@@ -64,6 +66,9 @@ export const Maps = () => {
                 {lands_obj.name}
         </div>
       </InfoWindow>
+
+
+      
         let marker_obj = <Marker position={coor_position} onClick={e => setInfobox(infobox_obj)} />
         store_marker.push(marker_obj)
       }

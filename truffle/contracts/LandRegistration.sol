@@ -35,6 +35,7 @@ mapping(address => bool)public manager_exist;
 mapping(uint => address)public managers;
 uint public no_of_managers;
 mapping (address => profiles) profile;
+
 uint[] public registered_lands;
 uint[] public pending_lands;
 uint[] public sold_lands;

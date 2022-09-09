@@ -7,7 +7,6 @@ import LandContext from '../../Land_contexts/LandContext';
 export default function Add_manager_form() {
   const { state:{accounts,contract} } = useContext(LandContext)
   const [manager_address,setManager_address] = useState()
-  const [location,setLocation] = useState()
 
   const add_Manager = async (e) => {
     e.preventDefault();
